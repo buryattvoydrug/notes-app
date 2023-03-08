@@ -1,9 +1,16 @@
+import NotesList from './components/NotesList';
+import { TextEditorProvider } from './TextEditor';
 import TextEditor from './TextEditor/TextEditor';
+import Tools from './Tools/Tools';
 
 function App() {
   return (
     <>
-      <TextEditor />
+      <NotesList />
+      <TextEditorProvider >
+        <TextEditor />
+        <Tools />
+      </TextEditorProvider>
     </>
   );
 }
