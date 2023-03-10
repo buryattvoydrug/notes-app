@@ -1,9 +1,12 @@
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
-import { useEffect, useMemo, useState } from 'react'
+import { convertFromRaw, convertToRaw, EditorState, RichUtils } from 'draft-js';
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { InlineStyle } from './config';
 
 export interface EditorStateI {
   editorState: EditorState,
   onChange: (state: EditorState) => void,
+  toggleInlineStyle: (inlineStyle: InlineStyle) => void,
+  hasInlineStyle: (inlineStyle: InlineStyle) => boolean,
 }
 
 export const useEditor = (): EditorStateI => {
@@ -27,8 +30,29 @@ export const useEditor = (): EditorStateI => {
     localStorage.setItem("currentEditorData", JSON.stringify(raw));
   }
 
+  const toggleInlineStyle = useCallback((inlineStyle: InlineStyle) => {
+    setEditorState((currentState) =>
+      RichUtils.toggleInlineStyle(currentState, inlineStyle)
+    );
+  }, []);
+
+  const hasInlineStyle = useCallback(
+    (inlineStyle: InlineStyle) => {
+      const currentStyle = editorState.getCurrentInlineStyle();
+      return currentStyle.has(inlineStyle);
+    },
+    [editorState]
+  );
+  
+
   return useMemo(() => ({
     editorState,
-    onChange: saveEditorContent
-  }), [editorState])
+    onChange: saveEditorContent,
+    toggleInlineStyle,
+    hasInlineStyle,
+  }), [
+    editorState,
+    toggleInlineStyle,
+    hasInlineStyle,
+  ])
 }
